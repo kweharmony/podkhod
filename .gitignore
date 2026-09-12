@@ -1,0 +1,33 @@
+# --- Секреты (в репозитории их быть не должно, методичка, Общие требования п.5) ---
+.env
+.env.local
+*.pem
+
+# --- Frontend ---
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# --- Backend (появится в ЛР №2) ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- Медиа датасета упражнений (2648 файлов, раздувают репозиторий) ---
+# Порядок загрузки описан в README
+data/media/
+data/exercises/
+
+# --- Редакторы и ОС ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Логи ---
+*.log
+npm-debug.log*
