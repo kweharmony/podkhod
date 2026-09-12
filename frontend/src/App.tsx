@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
+import MainLayout from './components/MainLayout'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -15,28 +16,20 @@ import NotFound from './pages/NotFound'
 export default function App() {
   return (
     <BrowserRouter>
-      <nav style={{ display: 'flex', gap: 12, padding: 12 }}>
-        <Link to="/">Дашборд</Link>
-        <Link to="/workouts">Тренировки</Link>
-        <Link to="/workouts/new">Новая тренировка</Link>
-        <Link to="/exercises">Упражнения</Link>
-        <Link to="/progress">Прогресс</Link>
-        <Link to="/measurements">Замеры</Link>
-        <Link to="/login">Вход</Link>
-        <Link to="/register">Регистрация</Link>
-      </nav>
-
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/workouts" element={<Workouts />} />
+          <Route path="/workouts/new" element={<WorkoutNew />} />
+          <Route path="/workouts/:id" element={<WorkoutDetail />} />
+          <Route path="/exercises" element={<Exercises />} />
+          <Route path="/exercises/:id" element={<ExerciseDetail />} />
+          <Route path="/progress" element={<Progress />} />
+          <Route path="/measurements" element={<Measurements />} />
+        </Route>
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/workouts" element={<Workouts />} />
-        <Route path="/workouts/new" element={<WorkoutNew />} />
-        <Route path="/workouts/:id" element={<WorkoutDetail />} />
-        <Route path="/exercises" element={<Exercises />} />
-        <Route path="/exercises/:id" element={<ExerciseDetail />} />
-        <Route path="/progress" element={<Progress />} />
-        <Route path="/measurements" element={<Measurements />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
