@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import MainLayout from './components/MainLayout'
+import PublicLayout from './components/PublicLayout'
+import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -17,8 +19,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+        </Route>
+
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/workouts/new" element={<WorkoutNew />} />
           <Route path="/workouts/:id" element={<WorkoutDetail />} />
