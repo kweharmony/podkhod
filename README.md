@@ -3,7 +3,17 @@
 Учебный проект по курсу «Fullstack», 1 семестр.
 Дневник силовых тренировок: записываешь подходы и видишь, растут ли рабочие веса.
 
-**Стек:** React + TypeScript (Vite) · FastAPI · PostgreSQL + SQLAlchemy
+## Стек
+
+Frontend:
+
+- React + TypeScript, сборка через Vite
+- React Router — маршрутизация
+- shadcn/ui (на Tailwind CSS и Radix UI) — библиотека UI-компонентов
+- Recharts — графики прогресса
+- Lucide — иконки
+- ESLint — проверка кода
+
 
 ## Назначение
 
