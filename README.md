@@ -66,14 +66,80 @@ Frontend:
 ## Структура репозитория
 
 ```
-frontend/         React + TypeScript (Vite)
-backend/          FastAPI + SQLAlchemy
+frontend/              React + TypeScript (Vite)
+backend/
+  app/
+    main.py            приложение FastAPI и подключение маршрутов
+    config.py          настройки из .env
+    database.py        подключение к базе и сессии
+    models.py          таблицы SQLAlchemy
+    schemas.py         схемы Pydantic для запросов и ответов
+    crud.py            операции с данными
+    logic.py           бизнес-логика: объём, 1RM, ИМТ
+    routers/           маршруты API
+docker-compose.yml     PostgreSQL
 docs/
-  screenshots/    скриншоты экранов
-logo/             логотипы проекта
+  screenshots/         скриншоты экранов
+logo/                  логотипы проекта
 ```
 
+## Модель данных
+
+| Таблица | Поля | Связи |
+|---|---|---|
+| `user` | email, name, height_cm | у пользователя много тренировок и замеров |
+| `exercise` | name, body_part, equipment, target, instruction | общий справочник, без владельца |
+| `workout` | user_id, date, title, note | принадлежит пользователю |
+| `workout_exercise` | workout_id, exercise_id, position | связывает тренировку и упражнение |
+| `set` | workout_exercise_id, weight, reps | подход внутри упражнения |
+| `measurement` | user_id, date, weight, chest, waist | принадлежит пользователю |
+
+```
+user ──┬── workout ──── workout_exercise ──── set
+       │                      │
+       └── measurement        └── exercise
+```
+
+Связь «многие ко многим» между тренировкой и упражнением сделана через таблицу
+`workout_exercise`: одна тренировка содержит много упражнений, а упражнение
+встречается во многих тренировках.
+
+Удаление каскадное: удалили тренировку — удалились её упражнения и подходы.
+
+На сервере считаются: объём тренировки (сумма вес × повторения), расчётный 1RM
+по формуле Эпли и ИМТ по росту из профиля.
+
 ## Запуск
+
+### База данных
+
+Нужен Docker. Из корня репозитория:
+
+```bash
+docker compose up -d
+```
+
+PostgreSQL поднимется на порту 5432.
+
+### Backend
+
+Нужен Python 3.11 или новее.
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scriptsctivate        # Windows
+pip install -r requirements.txt
+copy .env.example .env          # Windows
+uvicorn app.main:app --reload
+```
+
+Таблицы создаются автоматически при первом запуске.
+
+API: http://127.0.0.1:8000
+Swagger с описанием всех методов: http://127.0.0.1:8000/docs
+
+### Frontend
 
 Нужен Node.js 20 или новее.
 
@@ -85,7 +151,8 @@ npm run dev
 
 Приложение откроется на http://127.0.0.1:5173
 
-Данные пока демонстрационные, лежат в `frontend/src/data/demo.ts`.
+Фронтенд пока работает на демонстрационных данных из
+`frontend/src/data/demo.ts`. Подключение к API — в ЛР №5.
 
 ## Скриншоты
 
@@ -102,6 +169,10 @@ npm run dev
 | `progress.png` | прогресс |
 | `measurements.png` | замеры тела |
 | `404.png` | страница не найдена |
+| `swagger.png` | документация API |
 
 ## Источники данных
 
+Справочник упражнений заполняется вручную через API. Готовый датасет
+упражнений планируется подключить отдельным скриптом в ЛР №5, когда
+фронтенд будет работать с реальными данными.
