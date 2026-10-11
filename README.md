@@ -128,7 +128,7 @@ PostgreSQL поднимется на порту 5432.
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scriptsctivate        # Windows
+.venv\Scripts\activate         # Windows
 pip install -r requirements.txt
 copy .env.example .env          # Windows
 uvicorn app.main:app --reload
