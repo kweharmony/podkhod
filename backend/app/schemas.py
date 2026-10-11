@@ -148,3 +148,16 @@ class MeasurementRead(BaseModel):
     chest: float | None
     waist: float | None
     bmi: float | None = None
+
+
+# ---------- Совет помощника ----------
+
+
+class AdviceRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    user_id: int
+    created_at: datetime.date
+    text: str
+    source: str

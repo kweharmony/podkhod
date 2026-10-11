@@ -99,3 +99,17 @@ class Measurement(Base):
     waist: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="measurements")
+
+
+class Advice(Base):
+    """Совет помощника. Хранится, чтобы не обращаться к модели при каждом открытии."""
+
+    __tablename__ = "advice"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    created_at: Mapped[date] = mapped_column(Date)
+    text: Mapped[str] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(10))  # "ai" или "rules"
+
+    user: Mapped["User"] = relationship()

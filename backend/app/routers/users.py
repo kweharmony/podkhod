@@ -27,19 +27,3 @@ def add_user(data: schemas.UserCreate, db: Session = Depends(get_db)):
             status.HTTP_409_CONFLICT, "Пользователь с таким email уже существует"
         )
     return crud.create_user(db, data)
-
-
-@router.patch("/{user_id}", response_model=schemas.UserRead)
-def edit_user(user_id: int, data: schemas.UserUpdate, db: Session = Depends(get_db)):
-    user = crud.get_user(db, user_id)
-    if user is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Пользователь не найден")
-    return crud.update_user(db, user, data)
-
-
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_user(user_id: int, db: Session = Depends(get_db)):
-    user = crud.get_user(db, user_id)
-    if user is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Пользователь не найден")
-    crud.delete_user(db, user)

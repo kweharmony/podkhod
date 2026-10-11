@@ -1,5 +1,7 @@
 """Операции с данными. Здесь и только здесь приложение общается с базой."""
 
+from datetime import date
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -198,3 +200,24 @@ def update_measurement(
 def delete_measurement(db: Session, measurement: models.Measurement) -> None:
     db.delete(measurement)
     db.commit()
+
+
+# ---------- Советы помощника ----------
+
+
+def get_last_advice(db: Session, user_id: int) -> models.Advice | None:
+    return db.scalar(
+        select(models.Advice)
+        .where(models.Advice.user_id == user_id)
+        .order_by(models.Advice.id.desc())
+    )
+
+
+def create_advice(db: Session, user_id: int, text: str, source: str) -> models.Advice:
+    advice = models.Advice(
+        user_id=user_id, created_at=date.today(), text=text, source=source
+    )
+    db.add(advice)
+    db.commit()
+    db.refresh(advice)
+    return advice
