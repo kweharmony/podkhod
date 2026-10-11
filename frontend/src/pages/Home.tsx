@@ -1,10 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import ProgressChart from '@/components/ProgressChart'
-import VolumeChart from '@/components/VolumeChart'
-import { exerciseProgress, workouts } from '@/data/demo'
 import hero from '@/assets/hero.png'
 
 const steps = [
@@ -63,33 +59,6 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">{step.text}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="border-t py-16">
-        <h2 className="text-2xl font-semibold tracking-tight">Прогресс видно сразу</h2>
-        <p className="mt-2 text-muted-foreground">
-          Так выглядит дневник через полтора месяца регулярных тренировок.
-        </p>
-
-        <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-base">Жим лёжа: рабочий вес и расчётный максимум</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ProgressChart data={exerciseProgress} />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Объём тренировок</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <VolumeChart workouts={workouts} />
-            </CardContent>
-          </Card>
         </div>
       </section>
 

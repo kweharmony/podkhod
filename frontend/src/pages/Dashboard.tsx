@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ChevronRight, Dumbbell, Plus, Scale, Weight } from 'lucide-react'
+import { Dumbbell, Plus, Scale, Weight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -64,30 +64,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base">История тренировок</CardTitle>
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/workouts">Все тренировки</Link>
-          </Button>
-        </CardHeader>
-        <CardContent className="divide-y">
-          {workouts.map((workout) => (
-            <Link
-              key={workout.id}
-              to={`/workouts/${workout.id}`}
-              className="flex items-center justify-between py-3 text-sm first:pt-0 last:pb-0"
-            >
-              <span className="font-medium">{workout.title}</span>
-              <span className="flex items-center gap-1 text-muted-foreground">
-                {formatDate(workout.date)} · {workout.volume} кг
-                <ChevronRight className="size-4" />
-              </span>
-            </Link>
-          ))}
-        </CardContent>
-      </Card>
     </div>
   )
 }
