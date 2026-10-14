@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import EmptyState from '@/components/EmptyState'
-import { exercises } from '@/data/demo'
+import { Badge } from '@/shared/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import EmptyState from '@/shared/components/EmptyState'
+import { exercises } from '@/shared/demo/demo'
 
 export default function ExerciseDetail() {
   const { id } = useParams()

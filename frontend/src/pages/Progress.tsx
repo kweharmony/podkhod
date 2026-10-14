@@ -1,15 +1,15 @@
 import { useSearchParams } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import StatCard from '@/components/StatCard'
-import ProgressChart from '@/components/ProgressChart'
-import { exerciseProgress, exercises, workouts } from '@/data/demo'
+} from '@/shared/ui/select'
+import StatCard from '@/shared/components/StatCard'
+import ProgressChart from '@/entities/progress/ProgressChart'
+import { exerciseProgress, exercises, workouts } from '@/shared/demo/demo'
 
 export default function Progress() {
   const [searchParams, setSearchParams] = useSearchParams()

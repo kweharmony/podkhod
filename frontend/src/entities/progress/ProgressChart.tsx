@@ -8,9 +8,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { chartAxisProps, chartTooltipStyle } from '@/lib/chart'
-import { formatDayMonth } from '@/lib/format'
-import type { ProgressPoint } from '@/types'
+import { chartAxisProps, chartTooltipStyle } from '@/shared/lib/chart'
+import { formatDayMonth } from '@/shared/lib/format'
+import type { ProgressPoint } from '@/entities/types'
 
 type Props = {
   data: ProgressPoint[]

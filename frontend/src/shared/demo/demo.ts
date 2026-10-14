@@ -1,4 +1,4 @@
-import type { Exercise, Measurement, ProgressPoint, Workout, WorkoutSet } from '@/types'
+import type { Exercise, Measurement, ProgressPoint, Workout, WorkoutSet } from '@/entities/types'
 
 export const exercises: Exercise[] = [
   { id: 1, name: 'Barbell Bench Press', bodyPart: 'Грудь', equipment: 'Штанга', target: 'Большая грудная' },

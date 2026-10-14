@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/shared/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 import {
   Table,
   TableBody,
@@ -8,10 +8,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import EmptyState from '@/components/EmptyState'
-import { formatDate } from '@/lib/format'
-import { workoutSets, workouts } from '@/data/demo'
+} from '@/shared/ui/table'
+import EmptyState from '@/shared/components/EmptyState'
+import { formatDate } from '@/shared/lib/format'
+import { workoutSets, workouts } from '@/shared/demo/demo'
 
 export default function WorkoutDetail() {
   const { id } = useParams()

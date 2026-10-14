@@ -1,9 +1,9 @@
 import { Check, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { workoutSets } from '@/data/demo'
-import type { WorkoutSet } from '@/types'
+import { Button } from '@/shared/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { Input } from '@/shared/ui/input'
+import { workoutSets } from '@/shared/demo/demo'
+import type { WorkoutSet } from '@/entities/types'
 
 // Демо-тренировка: подходы первой тренировки, сгруппированные по упражнению
 const groups = workoutSets

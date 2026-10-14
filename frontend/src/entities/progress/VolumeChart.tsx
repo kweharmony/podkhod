@@ -1,7 +1,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
-import { chartAxisProps, chartTooltipStyle } from '@/lib/chart'
-import { formatDayMonth } from '@/lib/format'
-import type { Workout } from '@/types'
+import { chartAxisProps, chartTooltipStyle } from '@/shared/lib/chart'
+import { formatDayMonth } from '@/shared/lib/format'
+import type { Workout } from '@/entities/types'
 
 type Props = {
   workouts: Workout[]

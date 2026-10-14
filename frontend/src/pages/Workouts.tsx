@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { formatDate } from '@/lib/format'
-import { workouts } from '@/data/demo'
+import { Button } from '@/shared/ui/button'
+import WorkoutCard from '@/entities/workout/WorkoutCard'
+import { workouts } from '@/shared/demo/demo'
 
 export default function Workouts() {
   return (
@@ -21,17 +19,7 @@ export default function Workouts() {
 
       <div className="space-y-3">
         {workouts.map((workout) => (
-          <Link key={workout.id} to={`/workouts/${workout.id}`} className="block">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>{workout.title}</CardTitle>
-                <Badge variant="secondary">{formatDate(workout.date)}</Badge>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                {workout.exercises} упражнения · объём {workout.volume} кг
-              </CardContent>
-            </Card>
-          </Link>
+          <WorkoutCard key={workout.id} workout={workout} />
         ))}
       </div>
     </div>

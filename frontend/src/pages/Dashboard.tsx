@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
 import { Dumbbell, Plus, Scale, Weight } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import StatCard from '@/components/StatCard'
-import VolumeChart from '@/components/VolumeChart'
-import { formatDate } from '@/lib/format'
-import { measurements, workouts } from '@/data/demo'
+import { Badge } from '@/shared/ui/badge'
+import { Button } from '@/shared/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import StatCard from '@/shared/components/StatCard'
+import VolumeChart from '@/entities/progress/VolumeChart'
+import { formatDate } from '@/shared/lib/format'
+import { measurements, workouts } from '@/shared/demo/demo'
 
 export default function Dashboard() {
   const weekWorkouts = workouts.slice(0, 2)

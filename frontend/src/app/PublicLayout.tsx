@@ -1,5 +1,5 @@
 import { Link, Outlet } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/shared/ui/button'
 
 export default function PublicLayout() {
   return (
