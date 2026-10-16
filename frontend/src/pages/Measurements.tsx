@@ -1,12 +1,23 @@
-import { Plus } from 'lucide-react'
-import { Button } from '@/shared/ui/button'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Input } from '@/shared/ui/input'
-import { Label } from '@/shared/ui/label'
 import MeasurementTable from '@/entities/measurement/MeasurementTable'
-import { measurements } from '@/shared/demo/demo'
+import MeasurementForm from '@/features/measurement-form/MeasurementForm'
+import type { MeasurementValues } from '@/features/measurement-form/schema'
+import { measurements as demoMeasurements } from '@/shared/demo/demo'
+import type { Measurement } from '@/entities/types'
 
 export default function Measurements() {
+  const [measurements, setMeasurements] = useState<Measurement[]>(demoMeasurements)
+
+  function addMeasurement(values: MeasurementValues) {
+    const measurement: Measurement = {
+      id: Date.now(),
+      date: new Date().toISOString().slice(0, 10),
+      ...values,
+    }
+    setMeasurements([measurement, ...measurements])
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-semibold tracking-tight">Замеры тела</h1>
@@ -15,23 +26,8 @@ export default function Measurements() {
         <CardHeader>
           <CardTitle>Новый замер</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-wrap items-end gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="weight">Вес, кг</Label>
-            <Input id="weight" type="number" className="w-32" placeholder="78.4" />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="chest">Грудь, см</Label>
-            <Input id="chest" type="number" className="w-32" placeholder="102" />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="waist">Талия, см</Label>
-            <Input id="waist" type="number" className="w-32" placeholder="84" />
-          </div>
-          <Button>
-            <Plus />
-            Сохранить
-          </Button>
+        <CardContent>
+          <MeasurementForm onAdd={addMeasurement} />
         </CardContent>
       </Card>
 
