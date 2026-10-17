@@ -9,6 +9,10 @@ import {
 } from '@/shared/ui/select'
 import StatCard from '@/shared/components/StatCard'
 import ProgressChart from '@/entities/progress/ProgressChart'
+import ErrorState from '@/shared/components/ErrorState'
+import Loading from '@/shared/components/Loading'
+import NoData from '@/shared/components/NoData'
+import { useDemoData } from '@/shared/lib/useDemoData'
 import { exerciseProgress, exercises, workouts } from '@/shared/demo/demo'
 
 export default function Progress() {
@@ -16,6 +20,7 @@ export default function Progress() {
   const exerciseId = searchParams.get('exercise') ?? String(exercises[0].id)
   const exercise = exercises.find((item) => String(item.id) === exerciseId) ?? exercises[0]
 
+  const { data, loading, error } = useDemoData(exerciseProgress)
   const totalVolume = workouts.reduce((sum, workout) => sum + workout.volume, 0)
 
   return (
@@ -51,7 +56,12 @@ export default function Progress() {
           </Select>
         </CardHeader>
         <CardContent>
-          <ProgressChart data={exerciseProgress} />
+          {loading && <Loading text="Считаем прогресс..." />}
+          {error && <ErrorState text="Не удалось загрузить историю упражнения" />}
+          {!loading && !error && data.length === 0 && (
+            <NoData text="По этому упражнению ещё нет подходов" />
+          )}
+          {!loading && !error && data.length > 0 && <ProgressChart data={data} />}
         </CardContent>
       </Card>
     </div>
