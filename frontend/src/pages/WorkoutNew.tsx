@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { AnimatePresence, motion } from 'motion/react'
 import { Check, Plus, X } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
@@ -30,37 +31,48 @@ export default function WorkoutNew() {
               <CardTitle className="text-base">{exercise.name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {exercise.sets.map((set, index) => (
-                <div key={set.id} className="flex items-center gap-2 text-sm">
-                  <span className="w-6 text-muted-foreground">{index + 1}</span>
-                  <Input
-                    className="w-24"
-                    type="number"
-                    value={set.weight}
-                    onChange={(event) =>
-                      changeSet(exercise.name, set.id, 'weight', Number(event.target.value))
-                    }
-                  />
-                  <span className="text-muted-foreground">кг ×</span>
-                  <Input
-                    className="w-24"
-                    type="number"
-                    value={set.reps}
-                    onChange={(event) =>
-                      changeSet(exercise.name, set.id, 'reps', Number(event.target.value))
-                    }
-                  />
-                  <span className="text-muted-foreground">повт.</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Удалить подход"
-                    onClick={() => removeSet(exercise.name, set.id)}
+              <AnimatePresence initial={false}>
+                {exercise.sets.map((set, index) => (
+                  // Новый подход появляется, удалённый уезжает — видно, что он удалён
+                  <motion.div
+                    key={set.id}
+                    layout
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 12 }}
+                    transition={{ duration: 0.18 }}
+                    className="flex items-center gap-2 text-sm"
                   >
-                    <X />
-                  </Button>
-                </div>
-              ))}
+                    <span className="w-6 text-muted-foreground">{index + 1}</span>
+                    <Input
+                      className="w-24"
+                      type="number"
+                      value={set.weight}
+                      onChange={(event) =>
+                        changeSet(exercise.name, set.id, 'weight', Number(event.target.value))
+                      }
+                    />
+                    <span className="text-muted-foreground">кг ×</span>
+                    <Input
+                      className="w-24"
+                      type="number"
+                      value={set.reps}
+                      onChange={(event) =>
+                        changeSet(exercise.name, set.id, 'reps', Number(event.target.value))
+                      }
+                    />
+                    <span className="text-muted-foreground">повт.</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Удалить подход"
+                      onClick={() => removeSet(exercise.name, set.id)}
+                    >
+                      <X />
+                    </Button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {exercise.sets.length === 0 && (
                 <p className="text-sm text-muted-foreground">Подходов пока нет</p>

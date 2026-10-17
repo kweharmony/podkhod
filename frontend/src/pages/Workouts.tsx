@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import WorkoutCard from '@/entities/workout/WorkoutCard'
@@ -32,7 +33,17 @@ export default function Workouts() {
       <div className="space-y-3">
         {!loading &&
           !error &&
-          data.map((workout) => <WorkoutCard key={workout.id} workout={workout} />)}
+          data.map((workout, index) => (
+            // Карточки появляются по очереди, чтобы список не возникал рывком
+            <motion.div
+              key={workout.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: index * 0.06 }}
+            >
+              <WorkoutCard workout={workout} />
+            </motion.div>
+          ))}
       </div>
     </div>
   )
