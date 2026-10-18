@@ -30,19 +30,6 @@ def create_user(db: Session, data: schemas.UserCreate) -> models.User:
     return user
 
 
-def update_user(db: Session, user: models.User, data: schemas.UserUpdate) -> models.User:
-    for field, value in data.model_dump(exclude_unset=True).items():
-        setattr(user, field, value)
-    db.commit()
-    db.refresh(user)
-    return user
-
-
-def delete_user(db: Session, user: models.User) -> None:
-    db.delete(user)
-    db.commit()
-
-
 # ---------- Упражнения ----------
 
 

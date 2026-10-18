@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { Badge } from '@/shared/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
-import EmptyState from '@/shared/components/EmptyState'
+import NoData from '@/shared/components/NoData'
 import { exercises } from '@/shared/demo/demo'
 
 export default function ExerciseDetail() {
@@ -10,11 +10,7 @@ export default function ExerciseDetail() {
 
   if (!exercise) {
     return (
-      <EmptyState
-        title="Упражнение не найдено"
-        backTo="/exercises"
-        backLabel="К справочнику"
-      />
+      <NoData text="Упражнение не найдено" backTo="/exercises" backLabel="К справочнику" />
     )
   }
 
@@ -29,27 +25,14 @@ export default function ExerciseDetail() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Техника</CardTitle>
-          </CardHeader>
-          <CardContent className="flex h-64 items-center justify-center text-sm text-muted-foreground">
-            Здесь будет GIF из датасета
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Инструкция</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>1. Займите исходное положение.</p>
-            <p>2. Выполните движение с контролем.</p>
-            <p>3. Вернитесь в исходное положение.</p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Инструкция</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          Описание техники придёт из справочника вместе с данными в ЛР №5.
+        </CardContent>
+      </Card>
     </div>
   )
 }

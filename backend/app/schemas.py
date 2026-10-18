@@ -11,11 +11,6 @@ class UserCreate(BaseModel):
     height_cm: float | None = Field(default=None, gt=0, lt=300)
 
 
-class UserUpdate(BaseModel):
-    name: str | None = Field(default=None, min_length=1, max_length=100)
-    height_cm: float | None = Field(default=None, gt=0, lt=300)
-
-
 class UserRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

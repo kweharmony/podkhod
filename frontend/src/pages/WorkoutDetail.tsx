@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/ui/table'
-import EmptyState from '@/shared/components/EmptyState'
+import NoData from '@/shared/components/NoData'
 import { formatDate } from '@/shared/lib/format'
 import { workoutSets, workouts } from '@/shared/demo/demo'
 
@@ -19,11 +19,7 @@ export default function WorkoutDetail() {
 
   if (!workout) {
     return (
-      <EmptyState
-        title="Тренировка не найдена"
-        backTo="/workouts"
-        backLabel="К списку тренировок"
-      />
+      <NoData text="Тренировка не найдена" backTo="/workouts" backLabel="К списку тренировок" />
     )
   }
 

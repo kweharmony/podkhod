@@ -83,7 +83,6 @@ backend/
 docker-compose.yml     PostgreSQL
 docs/
   screenshots/         скриншоты экранов
-logo/                  логотипы проекта
 ```
 
 ## Структура frontend
@@ -217,7 +216,7 @@ npm run dev
 Приложение откроется на http://127.0.0.1:5173
 
 Фронтенд пока работает на демонстрационных данных из
-`frontend/src/data/demo.ts`. Подключение к API — в ЛР №5.
+`frontend/src/shared/demo/demo.ts`. Подключение к API — в ЛР №5.
 
 ## Скриншоты
 
