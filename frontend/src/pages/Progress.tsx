@@ -7,13 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select'
-import StatCard from '@/shared/components/StatCard'
 import ProgressChart from '@/entities/progress/ProgressChart'
 import ErrorState from '@/shared/components/ErrorState'
 import Loading from '@/shared/components/Loading'
 import NoData from '@/shared/components/NoData'
 import { useDemoData } from '@/shared/lib/useDemoData'
-import { exerciseProgress, exercises, workouts } from '@/shared/demo/demo'
+import { exerciseProgress, exercises } from '@/shared/demo/demo'
 
 export default function Progress() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -21,20 +20,10 @@ export default function Progress() {
   const exercise = exercises.find((item) => String(item.id) === exerciseId) ?? exercises[0]
 
   const { data, loading, error } = useDemoData(exerciseProgress)
-  const totalVolume = workouts.reduce((sum, workout) => sum + workout.volume, 0)
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-semibold tracking-tight">Прогресс</h1>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard title="Тренировок за месяц" value={workouts.length} />
-        <StatCard title="Суммарный объём, кг" value={totalVolume} />
-        <StatCard
-          title="Средний объём, кг"
-          value={Math.round(totalVolume / workouts.length)}
-        />
-      </div>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">

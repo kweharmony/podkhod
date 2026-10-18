@@ -62,18 +62,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t py-16 text-center">
-        <h2 className="text-3xl font-semibold tracking-tight">Начните с первого подхода</h2>
-        <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-          Регистрация занимает минуту, а справочник из 1324 упражнений доступен сразу.
-        </p>
-        <Button asChild size="lg" className="mt-6">
-          <Link to="/register">
-            Создать аккаунт
-            <ArrowRight />
-          </Link>
-        </Button>
-      </section>
     </div>
   )
 }
