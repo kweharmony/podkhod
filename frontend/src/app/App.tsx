@@ -10,7 +10,6 @@ import Workouts from '@/pages/Workouts'
 import WorkoutNew from '@/pages/WorkoutNew'
 import WorkoutDetail from '@/pages/WorkoutDetail'
 import Exercises from '@/pages/Exercises'
-import ExerciseDetail from '@/pages/ExerciseDetail'
 import Progress from '@/pages/Progress'
 import Measurements from '@/pages/Measurements'
 import NotFound from '@/pages/NotFound'
@@ -29,7 +28,6 @@ export default function App() {
           <Route path="/workouts/new" element={<WorkoutNew />} />
           <Route path="/workouts/:id" element={<WorkoutDetail />} />
           <Route path="/exercises" element={<Exercises />} />
-          <Route path="/exercises/:id" element={<ExerciseDetail />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/measurements" element={<Measurements />} />
         </Route>
