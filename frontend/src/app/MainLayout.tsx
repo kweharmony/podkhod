@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { logout } from '@/features/auth/api'
+import { useAuth } from '@/features/auth/context'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { BookOpen, Dumbbell, LayoutDashboard, LogIn, Ruler, TrendingUp } from 'lucide-react'
 
@@ -10,6 +13,16 @@ const links = [
 ]
 
 export default function MainLayout() {
+  const { setUser } = useAuth()
+  const [error, setError] = useState('')
+  async function signOut() {
+    try {
+      await logout()
+      setUser(null)
+    } catch {
+      setError('Не удалось выйти. Попробуйте снова')
+    }
+  }
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
@@ -35,13 +48,10 @@ export default function MainLayout() {
             ))}
           </nav>
 
-          <Link
-            to="/login"
-            className="ml-auto flex items-center gap-1.5 text-sm text-muted-foreground"
-          >
-            <LogIn className="size-4 shrink-0" />
-            <span className="hidden md:inline">Вход</span>
-          </Link>
+          <button onClick={signOut} className="ml-auto flex items-center gap-1.5 text-sm">
+            <LogIn className="size-4" /> Выйти
+          </button>
+          {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         </div>
       </header>
 

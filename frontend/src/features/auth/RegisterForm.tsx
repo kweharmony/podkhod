@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { authenticate } from './api'
+import { useAuth } from './context'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
@@ -7,16 +10,23 @@ import { registerSchema, type RegisterValues } from './schemas'
 
 export default function RegisterForm() {
   const navigate = useNavigate()
+  const { setUser } = useAuth()
+  const [error, setError] = useState('')
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegisterValues>({ resolver: zodResolver(registerSchema) })
 
-  // Регистрация появится в ЛР №4, пока проверяем форму и переходим на дашборд.
-  async function onSubmit() {
-    await new Promise((resolve) => setTimeout(resolve, 600))
-    navigate('/dashboard')
+  async function onSubmit(values: RegisterValues) {
+    setError('')
+    try {
+      const user = await authenticate('register', values)
+      setUser(user)
+      navigate('/dashboard', { replace: true })
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Сервер недоступен')
+    }
   }
 
   return (
@@ -44,6 +54,7 @@ export default function RegisterForm() {
         {...register('password')}
       />
 
+      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Создаём аккаунт...' : 'Создать аккаунт'}
       </Button>

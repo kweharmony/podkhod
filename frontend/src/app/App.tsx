@@ -1,3 +1,5 @@
+import AuthProvider from '@/features/auth/AuthProvider'
+import RequireAuth from '@/features/auth/RequireAuth'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import MainLayout from './MainLayout'
@@ -16,26 +18,30 @@ import NotFound from '@/pages/NotFound'
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<Home />} />
-        </Route>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Home />} />
+          </Route>
 
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/workouts" element={<Workouts />} />
-          <Route path="/workouts/new" element={<WorkoutNew />} />
-          <Route path="/workouts/:id" element={<WorkoutDetail />} />
-          <Route path="/exercises" element={<Exercises />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/measurements" element={<Measurements />} />
-        </Route>
+          <Route element={<RequireAuth />}>
+            <Route element={<MainLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/workouts" element={<Workouts />} />
+              <Route path="/workouts/new" element={<WorkoutNew />} />
+              <Route path="/workouts/:id" element={<WorkoutDetail />} />
+              <Route path="/exercises" element={<Exercises />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="/measurements" element={<Measurements />} />
+            </Route>
+          </Route>
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }

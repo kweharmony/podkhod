@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.database import get_db
+from app.security import current_user
 
 router = APIRouter(prefix="/exercises", tags=["Упражнения"])
 
@@ -24,12 +25,12 @@ def read_exercise(exercise_id: int, db: Session = Depends(get_db)):
     return exercise
 
 
-@router.post("", response_model=schemas.ExerciseRead, status_code=status.HTTP_201_CREATED)
+@router.post("", dependencies=[Depends(current_user)], response_model=schemas.ExerciseRead, status_code=status.HTTP_201_CREATED)
 def add_exercise(data: schemas.ExerciseCreate, db: Session = Depends(get_db)):
     return crud.create_exercise(db, data)
 
 
-@router.patch("/{exercise_id}", response_model=schemas.ExerciseRead)
+@router.patch("/{exercise_id}", dependencies=[Depends(current_user)], response_model=schemas.ExerciseRead)
 def edit_exercise(
     exercise_id: int, data: schemas.ExerciseUpdate, db: Session = Depends(get_db)
 ):
@@ -39,7 +40,7 @@ def edit_exercise(
     return crud.update_exercise(db, exercise, data)
 
 
-@router.delete("/{exercise_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{exercise_id}", dependencies=[Depends(current_user)], status_code=status.HTTP_204_NO_CONTENT)
 def remove_exercise(exercise_id: int, db: Session = Depends(get_db)):
     exercise = crud.get_exercise(db, exercise_id)
     if exercise is None:

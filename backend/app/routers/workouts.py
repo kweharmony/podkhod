@@ -3,25 +3,38 @@ from sqlalchemy.orm import Session
 
 from app import crud, logic, schemas
 from app.database import get_db
+from app.models import User
+from app.security import current_user, check_owner
 
 router = APIRouter(prefix="/workouts", tags=["Тренировки"])
 
 
-def _get_workout_or_404(db: Session, workout_id: int):
+def _get_workout_or_404(db: Session, workout_id: int, user: User):
     workout = crud.get_workout(db, workout_id)
     if workout is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Тренировка не найдена")
+    check_owner(workout.user_id, user)
     return workout
 
 
 @router.get("", response_model=list[schemas.WorkoutRead])
-def read_workouts(user_id: int | None = None, db: Session = Depends(get_db)):
-    return crud.list_workouts(db, user_id=user_id)
+def read_workouts(
+    user_id: int | None = None,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user),
+):
+    if user_id is not None:
+        check_owner(user_id, user)
+    return crud.list_workouts(db, user_id=user.id)
 
 
 @router.get("/{workout_id}", response_model=schemas.WorkoutDetail)
-def read_workout(workout_id: int, db: Session = Depends(get_db)):
-    workout = _get_workout_or_404(db, workout_id)
+def read_workout(
+    workout_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user),
+):
+    workout = _get_workout_or_404(db, workout_id, user)
     exercises = []
     for item in workout.exercises:
         row = schemas.WorkoutExerciseRead.model_validate(item)
@@ -39,7 +52,12 @@ def read_workout(workout_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=schemas.WorkoutRead, status_code=status.HTTP_201_CREATED)
-def add_workout(data: schemas.WorkoutCreate, db: Session = Depends(get_db)):
+def add_workout(
+    data: schemas.WorkoutCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user),
+):
+    check_owner(data.user_id, user)
     if crud.get_user(db, data.user_id) is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Пользователь не найден")
     return crud.create_workout(db, data)
@@ -47,15 +65,19 @@ def add_workout(data: schemas.WorkoutCreate, db: Session = Depends(get_db)):
 
 @router.patch("/{workout_id}", response_model=schemas.WorkoutRead)
 def edit_workout(
-    workout_id: int, data: schemas.WorkoutUpdate, db: Session = Depends(get_db)
+    workout_id: int, data: schemas.WorkoutUpdate, db: Session = Depends(get_db), user: User = Depends(current_user)
 ):
-    workout = _get_workout_or_404(db, workout_id)
+    workout = _get_workout_or_404(db, workout_id, user)
     return crud.update_workout(db, workout, data)
 
 
 @router.delete("/{workout_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_workout(workout_id: int, db: Session = Depends(get_db)):
-    workout = _get_workout_or_404(db, workout_id)
+def remove_workout(
+    workout_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user),
+):
+    workout = _get_workout_or_404(db, workout_id, user)
     crud.delete_workout(db, workout)
 
 
@@ -72,8 +94,9 @@ def add_exercise_to_workout(
     workout_id: int,
     data: schemas.WorkoutExerciseCreate,
     db: Session = Depends(get_db),
+    user: User = Depends(current_user),
 ):
-    workout = _get_workout_or_404(db, workout_id)
+    workout = _get_workout_or_404(db, workout_id, user)
     if crud.get_exercise(db, data.exercise_id) is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Упражнение не найдено")
     return crud.add_exercise_to_workout(db, workout, data)
@@ -84,10 +107,15 @@ def add_exercise_to_workout(
     status_code=status.HTTP_204_NO_CONTENT,
     tags=["Упражнения в тренировке"],
 )
-def remove_exercise_from_workout(item_id: int, db: Session = Depends(get_db)):
+def remove_exercise_from_workout(
+    item_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user),
+):
     item = crud.get_workout_exercise(db, item_id)
     if item is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Упражнение в тренировке не найдено")
+    check_owner(item.workout.user_id, user)
     crud.delete_workout_exercise(db, item)
 
 
@@ -100,18 +128,25 @@ def remove_exercise_from_workout(item_id: int, db: Session = Depends(get_db)):
     status_code=status.HTTP_201_CREATED,
     tags=["Подходы"],
 )
-def add_set(item_id: int, data: schemas.SetCreate, db: Session = Depends(get_db)):
+def add_set(
+    item_id: int,
+    data: schemas.SetCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user),
+):
     item = crud.get_workout_exercise(db, item_id)
     if item is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Упражнение в тренировке не найдено")
+    check_owner(item.workout.user_id, user)
     return crud.create_set(db, item, data)
 
 
 @router.delete(
     "/sets/{set_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Подходы"]
 )
-def remove_set(set_id: int, db: Session = Depends(get_db)):
+def remove_set(set_id: int, db: Session = Depends(get_db), user: User = Depends(current_user)):
     item = crud.get_set(db, set_id)
     if item is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Подход не найден")
+    check_owner(item.workout_exercise.workout.user_id, user)
     crud.delete_set(db, item)

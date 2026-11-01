@@ -1,13 +1,16 @@
 from fastapi import FastAPI
 
 from app.database import Base, engine
-from app.routers import advice, exercises, measurements, users, workouts
+from app.migrate_auth import add_password_column
+from app.routers import auth, advice, exercises, measurements, users, workouts
 
 # Создание таблиц при старте приложения
 Base.metadata.create_all(bind=engine)
+add_password_column()
 
-app = FastAPI(title="Podkhod API", description="Дневник силовых тренировок")
+app = FastAPI(title="Podkhod API", description="Дневник силовых тренировок", root_path="/api")
 
+app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(exercises.router)
 app.include_router(workouts.router)

@@ -2,11 +2,11 @@ import { z } from 'zod'
 
 export const loginSchema = z.object({
   email: z.email('Похоже, это не email'),
-  password: z.string().min(6, 'Пароль не короче 6 символов'),
+  password: z.string().min(6, 'Пароль не короче 6 символов').max(128, 'Пароль до 128 символов'),
 })
 
 export const registerSchema = loginSchema.extend({
-  name: z.string().min(2, 'Имя не короче 2 символов'),
+  name: z.string().min(2, 'Имя не короче 2 символов').max(100, 'Имя до 100 символов'),
 })
 
 export type LoginValues = z.infer<typeof loginSchema>

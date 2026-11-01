@@ -5,12 +5,6 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 # ---------- Пользователь ----------
 
 
-class UserCreate(BaseModel):
-    email: EmailStr
-    name: str = Field(min_length=1, max_length=100)
-    height_cm: float | None = Field(default=None, gt=0, lt=300)
-
-
 class UserRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

@@ -14,22 +14,6 @@ def get_user(db: Session, user_id: int) -> models.User | None:
     return db.get(models.User, user_id)
 
 
-def get_user_by_email(db: Session, email: str) -> models.User | None:
-    return db.scalar(select(models.User).where(models.User.email == email))
-
-
-def list_users(db: Session) -> list[models.User]:
-    return list(db.scalars(select(models.User).order_by(models.User.id)))
-
-
-def create_user(db: Session, data: schemas.UserCreate) -> models.User:
-    user = models.User(**data.model_dump())
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
-
-
 # ---------- Упражнения ----------
 
 

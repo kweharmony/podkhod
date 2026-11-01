@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import date, datetime
 
-from sqlalchemy import Date, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Date, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -12,6 +12,7 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     email: Mapped[str] = mapped_column(String(255), unique=True)
     name: Mapped[str] = mapped_column(String(100))
     height_cm: Mapped[float | None] = mapped_column(Float, nullable=True)
@@ -113,3 +114,12 @@ class Advice(Base):
     source: Mapped[str] = mapped_column(String(10))  # "ai" или "rules"
 
     user: Mapped["User"] = relationship()
+
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_token"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

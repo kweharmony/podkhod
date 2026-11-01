@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { authenticate } from './api'
+import { useAuth } from './context'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
@@ -7,16 +10,23 @@ import { loginSchema, type LoginValues } from './schemas'
 
 export default function LoginForm() {
   const navigate = useNavigate()
+  const { setUser } = useAuth()
+  const [error, setError] = useState('')
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({ resolver: zodResolver(loginSchema) })
 
-  // Входа пока нет, он будет в ЛР №4. Проверяем только форму и переходим на дашборд.
-  async function onSubmit() {
-    await new Promise((resolve) => setTimeout(resolve, 600))
-    navigate('/dashboard')
+  async function onSubmit(values: LoginValues) {
+    setError('')
+    try {
+      const user = await authenticate('login', values)
+      setUser(user)
+      navigate('/dashboard', { replace: true })
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Сервер недоступен')
+    }
   }
 
   return (
@@ -36,6 +46,7 @@ export default function LoginForm() {
         error={errors.password?.message}
         {...register('password')}
       />
+      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Входим...' : 'Войти'}
       </Button>
