@@ -1,3 +1,8 @@
+async function fetchApi(path: string, options: RequestInit) {
+  try { return await fetch(path, options) }
+  catch { throw new Error('Нет связи с сервером. Проверьте, что backend запущен') }
+}
+
 let token: string | null = null
 let refreshRequest: Promise<void> | null = null
 
@@ -6,7 +11,7 @@ export function clearToken() {
 }
 
 async function send(path: string, body?: unknown) {
-  const response = await fetch(`/api/auth/${path}`, {
+  const response = await fetchApi(`/api/auth/${path}`, {
     method: 'POST',
     credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
@@ -38,7 +43,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
   function request() {
     const headers = new Headers(options.headers)
     if (token) headers.set('Authorization', `Bearer ${token}`)
-    return fetch(`/api${path}`, { ...options, headers })
+    return fetchApi(`/api${path}`, { ...options, headers })
   }
   let response = await request()
   if (response.status === 401) {

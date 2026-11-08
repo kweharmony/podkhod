@@ -15,7 +15,7 @@ export function useResource<T>(load: () => Promise<T>) {
         }
       })
       .catch((error: Error) => {
-        if (active) setError(error.message)
+        if (active) { setData(null); setError(error.message) }
       })
       .finally(() => {
         if (active) setLoading(false)
