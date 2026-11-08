@@ -192,3 +192,11 @@ def create_advice(db: Session, user_id: int, text: str, source: str) -> models.A
     db.commit()
     db.refresh(advice)
     return advice
+
+
+def update_set(db: Session, item: models.Set, data: schemas.SetCreate) -> models.Set:
+    item.weight = data.weight
+    item.reps = data.reps
+    db.commit()
+    db.refresh(item)
+    return item

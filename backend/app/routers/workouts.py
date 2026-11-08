@@ -150,3 +150,12 @@ def remove_set(set_id: int, db: Session = Depends(get_db), user: User = Depends(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Подход не найден")
     check_owner(item.workout_exercise.workout.user_id, user)
     crud.delete_set(db, item)
+
+
+@router.patch("/sets/{set_id}", response_model=schemas.SetRead)
+def edit_set(set_id: int, data: schemas.SetCreate, db: Session = Depends(get_db), user: User = Depends(current_user)):
+    item = crud.get_set(db, set_id)
+    if item is None:
+        raise HTTPException(404, "Подход не найден")
+    check_owner(item.workout_exercise.workout.user_id, user)
+    return crud.update_set(db, item, data)
