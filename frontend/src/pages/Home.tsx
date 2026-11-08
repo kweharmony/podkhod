@@ -32,8 +32,9 @@ export default function Home() {
             Каждый подход имеет значение
           </h1>
           <p className="text-lg text-muted-foreground">
-            Сила растёт не за одну тренировку, а за сотню подходов, которые вы не пропустили.
-            Podkhod помнит каждый из них и показывает, как далеко вы ушли от себя прежнего.
+            Сила растёт не за одну тренировку, а за сотню подходов, которые вы
+            не пропустили. Podkhod помнит каждый из них и показывает, как далеко
+            вы ушли от себя прежнего.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
@@ -50,18 +51,21 @@ export default function Home() {
       </section>
 
       <section className="border-t py-16">
-        <h2 className="text-2xl font-semibold tracking-tight">Как это работает</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Как это работает
+        </h2>
         <div className="mt-8 grid gap-8 md:grid-cols-3">
           {steps.map((step) => (
             <div key={step.number} className="space-y-3">
-              <p className="text-5xl font-semibold tracking-tight text-muted-foreground/40">{step.number}</p>
+              <p className="text-5xl font-semibold tracking-tight text-muted-foreground/40">
+                {step.number}
+              </p>
               <h3 className="text-lg font-medium">{step.title}</h3>
               <p className="text-sm text-muted-foreground">{step.text}</p>
             </div>
           ))}
         </div>
       </section>
-
     </div>
   )
 }

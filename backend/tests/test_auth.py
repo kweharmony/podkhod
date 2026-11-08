@@ -117,6 +117,27 @@ class AuthTests(unittest.TestCase):
             self.assertEqual(getattr(other, method)(f'/users/{user_id}/advice').status_code, 403)
         self.assertEqual(other.get(f'/users/{user_id}').status_code, 403)
 
+    def test_workout_crud(self):
+        client, _ = self.register()
+        uid = client.get('/auth/me').json()['id']
+        workout = client.post('/workouts', json={'user_id': uid, 'date': '2026-11-08', 'title': 'Test'}).json()
+        wid = workout['id']
+        eid = client.post('/exercises', json={'name':'Test','body_part':'Legs','equipment':'Bar','target':'Quads'}).json()['id']
+        iid = client.post(f'/workouts/{wid}/exercises', json={'exercise_id':eid}).json()['id']
+        sid = client.post(f'/workouts/exercises/{iid}/sets', json={'weight':80,'reps':8}).json()['id']
+        self.assertEqual(client.get(f'/workouts/{wid}').json()['volume'], 640)
+        self.assertEqual(client.patch(f'/workouts/sets/{sid}', json={'weight':90,'reps':5}).status_code, 200)
+        self.assertEqual(client.get(f'/workouts/{wid}').json()['volume'], 450)
+        self.assertEqual(client.patch(f'/workouts/sets/{sid}', json={'weight':-1,'reps':5}).status_code, 422)
+        self.assertEqual(client.delete(f'/exercises/{eid}').status_code, 409)
+        self.assertEqual(client.patch(f'/workouts/{wid}', json={'title':'Updated'}).json()['title'], 'Updated')
+        mid = client.post('/measurements', json={'user_id':uid,'date':'2026-11-08','weight':80}).json()['id']
+        self.assertEqual(client.patch(f'/measurements/{mid}', json={'weight':79}).json()['weight'],79)
+        self.assertEqual(client.delete(f'/measurements/{mid}').status_code,204)
+        self.assertEqual(client.delete(f'/workouts/{wid}').status_code,204)
+        self.assertEqual(client.get(f'/workouts/{wid}').status_code,404)
+        self.assertEqual(client.delete(f'/exercises/{eid}').status_code,204)
+
 
 if __name__ == '__main__':
     unittest.main()

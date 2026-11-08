@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app import crud, schemas
 from app.database import get_db
@@ -45,4 +46,8 @@ def remove_exercise(exercise_id: int, db: Session = Depends(get_db)):
     exercise = crud.get_exercise(db, exercise_id)
     if exercise is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Упражнение не найдено")
-    crud.delete_exercise(db, exercise)
+    try:
+        crud.delete_exercise(db, exercise)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Упражнение используется в тренировке")

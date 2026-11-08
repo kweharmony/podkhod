@@ -12,17 +12,45 @@ export default function WorkoutNew() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const values = new FormData(event.currentTarget)
-    setBusy(true); setError('')
+    setBusy(true)
+    setError('')
     try {
       const workout = await request<{ id: number }>('/workouts', 'POST', {
-        user_id: user!.id, title: values.get('title'), date: values.get('date') })
+        user_id: user!.id,
+        title: values.get('title'),
+        date: values.get('date'),
+      })
       navigate(`/workouts/${workout.id}`, { replace: true })
-    } catch (error) { setError((error as Error).message) } finally { setBusy(false) }
+    } catch (error) {
+      setError((error as Error).message)
+    } finally {
+      setBusy(false)
+    }
   }
-  return <form onSubmit={submit} className="max-w-lg space-y-4"><h1 className="text-3xl font-semibold">Новая тренировка</h1>
-    <FormField id="title" name="title" label="Название" required maxLength={200} />
-    <FormField id="date" name="date" label="Дата" type="date" required defaultValue={new Date().toISOString().slice(0,10)} />
-    {error && <p role="alert" className="text-destructive">{error}</p>}
-    <Button disabled={busy}>Создать</Button>
-  </form>
+  return (
+    <form onSubmit={submit} className="max-w-lg space-y-4">
+      <h1 className="text-3xl font-semibold">Новая тренировка</h1>
+      <FormField
+        id="title"
+        name="title"
+        label="Название"
+        required
+        maxLength={200}
+      />
+      <FormField
+        id="date"
+        name="date"
+        label="Дата"
+        type="date"
+        required
+        defaultValue={new Date().toISOString().slice(0, 10)}
+      />
+      {error && (
+        <p role="alert" className="text-destructive">
+          {error}
+        </p>
+      )}
+      <Button disabled={busy}>Создать</Button>
+    </form>
+  )
 }

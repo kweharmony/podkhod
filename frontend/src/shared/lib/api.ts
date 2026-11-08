@@ -1,17 +1,24 @@
 let token: string | null = null
 let refreshRequest: Promise<void> | null = null
 
-export function clearToken() { token = null }
+export function clearToken() {
+  token = null
+}
 
 async function send(path: string, body?: unknown) {
   const response = await fetch(`/api/auth/${path}`, {
-    method: 'POST', credentials: 'same-origin',
+    method: 'POST',
+    credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   if (!response.ok) {
     const data = await response.json()
-    throw new Error(typeof data.detail === 'string' ? data.detail : 'Проверьте введённые данные')
+    throw new Error(
+      typeof data.detail === 'string'
+        ? data.detail
+        : 'Проверьте введённые данные',
+    )
   }
   if (response.status === 204) return
   const data = await response.json()
@@ -20,7 +27,9 @@ async function send(path: string, body?: unknown) {
 
 export async function refresh() {
   if (!refreshRequest) {
-    refreshRequest = send('refresh').finally(() => { refreshRequest = null })
+    refreshRequest = send('refresh').finally(() => {
+      refreshRequest = null
+    })
   }
   await refreshRequest
 }
@@ -33,7 +42,9 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
   }
   let response = await request()
   if (response.status === 401) {
-    try { await refresh() } catch {
+    try {
+      await refresh()
+    } catch {
       clearToken()
       window.dispatchEvent(new Event('session-expired'))
       throw new Error('Сессия истекла. Войдите снова')
@@ -43,14 +54,26 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
   if (!response.ok) {
     const data = await response.json().catch(() => ({}))
     const detail = data.detail
-    throw new Error(typeof detail === 'string' ? detail : Array.isArray(detail)
-      ? detail.map((item: { loc: string[]; msg: string }) => `${item.loc.slice(1).join('.')}: ${item.msg}`).join('; ')
-      : 'Не удалось выполнить запрос')
+    throw new Error(
+      typeof detail === 'string'
+        ? detail
+        : Array.isArray(detail)
+          ? detail
+              .map(
+                (item: { loc: string[]; msg: string }) =>
+                  `${item.loc.slice(1).join('.')}: ${item.msg}`,
+              )
+              .join('; ')
+          : 'Не удалось выполнить запрос',
+    )
   }
   return response
 }
 
-export async function authenticate(path: 'login' | 'register', values: unknown) {
+export async function authenticate(
+  path: 'login' | 'register',
+  values: unknown,
+) {
   await send(path, values)
   const response = await apiFetch('/auth/me')
   return response.json() as Promise<User>
@@ -63,9 +86,15 @@ export async function logout() {
 
 export type User = { id: number; name: string; email: string }
 
-export async function request<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
-  const response = await apiFetch(path, { method,
+export async function request<T>(
+  path: string,
+  method = 'GET',
+  body?: unknown,
+): Promise<T> {
+  const response = await apiFetch(path, {
+    method,
     headers: { 'Content-Type': 'application/json' },
-    body: body === undefined ? undefined : JSON.stringify(body) })
-  return response.status === 204 ? undefined as T : response.json()
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+  return response.status === 204 ? (undefined as T) : response.json()
 }
