@@ -1,85 +1,31 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Dumbbell, Plus, Scale, Weight } from 'lucide-react'
-import { Badge } from '@/shared/ui/badge'
-import { Button } from '@/shared/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
-import StatCard from '@/shared/components/StatCard'
+import { loadWorkouts, loadMeasurements } from '@/entities/api'
+import { request } from '@/shared/lib/api'
+import { useAuth } from '@/features/auth/context'
+import { useResource } from '@/shared/lib/useResource'
+import ResourceState from '@/shared/components/ResourceState'
 import VolumeChart from '@/entities/progress/VolumeChart'
-import ErrorState from '@/shared/components/ErrorState'
-import Loading from '@/shared/components/Loading'
-import NoData from '@/shared/components/NoData'
-import { useDemoData } from '@/shared/lib/useDemoData'
-import { formatDate } from '@/shared/lib/format'
-import { measurements, workouts } from '@/shared/demo/demo'
-
-export default function Dashboard() {
-  const { data, loading, error } = useDemoData(workouts)
-
-  const weekWorkouts = data.slice(0, 2)
-  const weekVolume = weekWorkouts.reduce((sum, workout) => sum + workout.volume, 0)
-  const lastWorkout = data[0]
-  const [lastMeasurement, previousMeasurement] = measurements
-  const weightDiff = (lastMeasurement.weight - previousMeasurement.weight).toFixed(1)
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-semibold tracking-tight">Дашборд</h1>
-        <Button asChild>
-          <Link to="/workouts/new">
-            <Plus />
-            Начать тренировку
-          </Link>
-        </Button>
-      </div>
-
-      {loading && <Loading />}
-      {error && <ErrorState />}
-      {!loading && !error && !lastWorkout && (
-        <NoData text="Тренировок пока нет, поэтому и считать нечего." />
-      )}
-
-      {!loading && !error && lastWorkout && (
-        <>
-          <div className="grid gap-4 md:grid-cols-3">
-            <StatCard title="Тренировок за неделю" value={weekWorkouts.length} icon={Dumbbell} />
-            <StatCard title="Объём за неделю, кг" value={weekVolume} icon={Weight} />
-            <StatCard
-              title="Вес тела, кг"
-              value={lastMeasurement.weight}
-              icon={Scale}
-              hint={`${weightDiff} за неделю`}
-            />
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-3">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base">Объём по тренировкам</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <VolumeChart workouts={data} />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-base">Последняя тренировка</CardTitle>
-                <Badge variant="secondary">{formatDate(lastWorkout.date)}</Badge>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="font-medium">{lastWorkout.title}</p>
-                <p className="text-sm text-muted-foreground">
-                  {lastWorkout.exercises} упражнения · {lastWorkout.volume} кг
-                </p>
-                <Button asChild variant="outline" size="sm">
-                  <Link to={`/workouts/${lastWorkout.id}`}>Открыть</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </>
-      )}
-    </div>
-  )
+import { Button } from '@/shared/ui/button'
+type Advice={text:string;source:string;created_at:string}
+async function loadDashboard(){return {workouts:await loadWorkouts(),measurements:await loadMeasurements()}}
+export default function Dashboard(){
+  const {user}=useAuth();const {data,loading,error}=useResource(loadDashboard)
+  const loadAdvice=async()=>{try{return await request<Advice>(`/users/${user!.id}/advice`)}catch(error){if((error as Error).message==='Советов пока нет')return null;throw error}}
+  const [advice,setAdvice]=useState<Advice|null>(null);const [message,setMessage]=useState('');const [busy,setBusy]=useState(false)
+  const [today] = useState(() => Date.now())
+  const week=(data?.workouts??[]).filter(w=>{const days=(today-new Date(w.date).getTime())/86400000;return days>=0&&days<7})
+  return <div className="space-y-6"><h1 className="text-3xl font-semibold">{user?.name}, ваш дневник</h1><Button asChild><Link to="/workouts/new">Начать тренировку</Link></Button>
+    <ResourceState loading={loading} error={error}/>{data&&<><p>За 7 дней: {week.length} тренировок · {week.reduce((sum,w)=>sum+w.volume,0)} кг</p>
+      <p>Последний вес: {data.measurements[0]?.weight??'нет замеров'}</p>
+      {data.workouts.length?<VolumeChart workouts={data.workouts.map(w=>({...w,exercises:w.exercises.length}))}/>:<p>Начните первую тренировку</p>}
+      {data.workouts[0]&&<Link to={`/workouts/${data.workouts[0].id}`}>Последняя тренировка: {data.workouts[0].title}</Link>}
+    </>}
+    <section className="space-y-3 rounded-xl border p-4"><h2>Помощник</h2>
+      <Button disabled={busy} onClick={async()=>{setBusy(true);setMessage('');try{setAdvice(await loadAdvice())}catch(error){setMessage((error as Error).message)}finally{setBusy(false)}}}>Последний совет</Button>
+      <Button disabled={busy} onClick={async()=>{setBusy(true);setMessage('');try{setAdvice(await request<Advice>(`/users/${user!.id}/advice`,'POST'))}catch(error){setMessage((error as Error).message)}finally{setBusy(false)}}}>{busy?'Подождите...':'Получить новый совет'}</Button>
+      {advice?<><p>{advice.text}</p><p className="text-sm text-muted-foreground">{advice.created_at} · {advice.source==='ai'?'ИИ':'Правила'}</p></>:<p>Совет ещё не загружен</p>}
+      {message&&<p role="alert" className="text-destructive">{message}</p>}
+    </section>
+  </div>
 }

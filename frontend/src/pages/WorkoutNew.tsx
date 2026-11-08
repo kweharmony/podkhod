@@ -1,96 +1,28 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { AnimatePresence, motion } from 'motion/react'
-import { Check, Plus, X } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/features/auth/context'
+import { request } from '@/shared/lib/api'
 import { Button } from '@/shared/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
-import { Input } from '@/shared/ui/input'
-import { useDraftWorkout } from '@/features/workout-sets/useDraftWorkout'
-
+import FormField from '@/shared/components/FormField'
 export default function WorkoutNew() {
+  const { user } = useAuth()
   const navigate = useNavigate()
-  const { exercises, volume, addSet, removeSet, changeSet } = useDraftWorkout()
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-semibold tracking-tight">Новая тренировка</h1>
-        <Button asChild variant="outline">
-          <Link to="/exercises">
-            <Plus />
-            Добавить упражнение
-          </Link>
-        </Button>
-      </div>
-
-      <p className="text-sm text-muted-foreground">Объём: {volume} кг</p>
-
-      <div className="space-y-4">
-        {exercises.map((exercise) => (
-          <Card key={exercise.name}>
-            <CardHeader>
-              <CardTitle className="text-base">{exercise.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <AnimatePresence initial={false}>
-                {exercise.sets.map((set, index) => (
-                  // Новый подход появляется, удалённый уезжает — видно, что он удалён
-                  <motion.div
-                    key={set.id}
-                    layout
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 12 }}
-                    transition={{ duration: 0.18 }}
-                    className="flex items-center gap-2 text-sm"
-                  >
-                    <span className="w-6 text-muted-foreground">{index + 1}</span>
-                    <Input
-                      className="w-24"
-                      type="number"
-                      value={set.weight}
-                      onChange={(event) =>
-                        changeSet(exercise.name, set.id, 'weight', Number(event.target.value))
-                      }
-                    />
-                    <span className="text-muted-foreground">кг ×</span>
-                    <Input
-                      className="w-24"
-                      type="number"
-                      value={set.reps}
-                      onChange={(event) =>
-                        changeSet(exercise.name, set.id, 'reps', Number(event.target.value))
-                      }
-                    />
-                    <span className="text-muted-foreground">повт.</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Удалить подход"
-                      onClick={() => removeSet(exercise.name, set.id)}
-                    >
-                      <X />
-                    </Button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-
-              {exercise.sets.length === 0 && (
-                <p className="text-sm text-muted-foreground">Подходов пока нет</p>
-              )}
-
-              <Button variant="ghost" size="sm" onClick={() => addSet(exercise.name)}>
-                <Plus />
-                Добавить подход
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Button onClick={() => navigate('/workouts')}>
-        <Check />
-        Завершить тренировку
-      </Button>
-    </div>
-  )
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const values = new FormData(event.currentTarget)
+    setBusy(true); setError('')
+    try {
+      const workout = await request<{ id: number }>('/workouts', 'POST', {
+        user_id: user!.id, title: values.get('title'), date: values.get('date') })
+      navigate(`/workouts/${workout.id}`, { replace: true })
+    } catch (error) { setError((error as Error).message) } finally { setBusy(false) }
+  }
+  return <form onSubmit={submit} className="max-w-lg space-y-4"><h1 className="text-3xl font-semibold">Новая тренировка</h1>
+    <FormField id="title" name="title" label="Название" required maxLength={200} />
+    <FormField id="date" name="date" label="Дата" type="date" required defaultValue={new Date().toISOString().slice(0,10)} />
+    {error && <p role="alert" className="text-destructive">{error}</p>}
+    <Button disabled={busy}>Создать</Button>
+  </form>
 }

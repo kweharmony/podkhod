@@ -14,22 +14,6 @@ export type Workout = {
   volume: number
 }
 
-export type WorkoutSet = {
-  id: number
-  workoutId: number
-  exercise: string
-  weight: number
-  reps: number
-}
-
-export type Measurement = {
-  id: number
-  date: string
-  weight: number
-  chest: number
-  waist: number
-}
-
 export type ProgressPoint = {
   date: string
   weight: number
